@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <title>{{ page_title }}</title>
+        {% comment %} {{ 'theme.css' | asset_url | stylesheet_tag }} {% endcomment %}
+        {{ content_for_header }}
+    </head>
+    <body>
+        {{ content_for_layout }}
+        {% comment %} {{ 'theme.js' | asset_url | script_tag }} {% endcomment %}
+        {% comment %} {{ content_for_footer }} {% endcomment %}
+    </body>
+</html>
