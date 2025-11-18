@@ -1,10 +1,20 @@
 <html>
     <head>
+        <meta charset="utf-8">
         <title>{{ page_title }}</title>
+
+        {% if settings.favicon %}
+            <link rel="icon" href="{{ settings.favicon | img_url: '32x32' }}" sizes="32x32" type="image/png" />
+            <link rel="apple-touch-icon" href="{{ settings.favicon | img_url: '180x180' }}" />
+        {% else %}
+            <link rel="icon" href="{{ 'favicon.ico' | asset_url }}" />
+        {% endif %}
+
         {% comment %} {{ 'theme.css' | asset_url | stylesheet_tag }} {% endcomment %}
         {{ content_for_header }}
     </head>
     <body>
+        {% section 'header' %}
         {{ content_for_layout }}
         {% comment %} {{ 'theme.js' | asset_url | script_tag }} {% endcomment %}
         {% comment %} {{ content_for_footer }} {% endcomment %}

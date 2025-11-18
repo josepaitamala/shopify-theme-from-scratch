@@ -1,0 +1,251 @@
+{% comment %}
+    templates/cart.liquid
+    Simple, clean cart page showing all line items and a checkout button.
+{% endcomment %}
+
+<style>
+    .cart-wrap {
+        max-width: 980px;
+        margin: 40px auto;
+        padding: 24px;
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial;
+        color: #222;
+    }
+
+    .cart-actions form {
+        display: inline-block;
+    }
+
+    .cart-price > div:nth-child(2) {
+        font-size: 12px !important;
+        color: #777 !important;
+    }
+
+    .cart-summary > div > div:first-child {
+        color: #666 !important;
+        font-size: 14px !important;
+    }
+
+    .cart-summary > div:last-child {
+        display: flex !important;
+        gap: 12px !important;
+        align-items: center !important;
+    }
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .cart-header h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .cart-list {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 18px;
+    }
+
+    .cart-list thead th {
+        text-align: left;
+        font-size: 13px;
+        color: #666;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .cart-item {
+        display: flex;
+        gap: 16px;
+        padding: 18px 0;
+        border-bottom: 1px solid #f4f4f4;
+        align-items: center;
+    }
+
+    .cart-thumb {
+        width: 72px;
+        height: 72px;
+        flex: 0 0 72px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #f0f0f0;
+    }
+
+    .cart-thumb img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+    }
+
+    .cart-meta {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .cart-title {
+        font-size: 15px;
+        margin: 0 0 6px 0;
+        color: #111;
+        text-decoration: none;
+    }
+
+    .cart-variant {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    .cart-price {
+        width: 120px;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 6px;
+    }
+
+    .qty-input {
+        width: 64px;
+        padding: 6px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 8px 12px;
+        background: #111;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .btn--muted {
+        background: #f6f6f6;
+        color: #333;
+        border: 1px solid #e6e6e6;
+    }
+
+    .cart-summary {
+        text-align: right;
+        margin-top: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .subtotal {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+
+    @media (max-width: 600px) {
+        .cart-item {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .cart-price {
+            text-align: left;
+        }
+
+        .cart-summary {
+            text-align: left;
+        }
+    }
+</style>
+
+<div class="cart-wrap">
+    <div class="cart-header">
+        <h1>Your Cart ({{ cart.item_count }})</h1>
+        <div>
+            <a href="/" class="btn btn--muted">Continue shopping</a>
+        </div>
+    </div>
+
+    {% if cart.item_count == 0 %}
+        <div class="empty-cart">
+            <p>Your cart is currently empty.</p>
+            <p><a href="/collections/all" class="btn">Browse products</a></p>
+        </div>
+    {% else %}
+        <div class="cart-list">
+            {% for item in cart.items %}
+                <div class="cart-item" id="cart-item-{{ forloop.index }}">
+                    <div class="cart-thumb">
+                        {% if item.image %}
+                            <img src="{{ item.image | img_url: '200x' }}" alt="{{ item.title }}">
+                        {% elsif item.product.featured_image %}
+                            <img src="{{ item.product.featured_image | img_url: '200x' }}" alt="{{ item.title }}">
+                        {% else %}
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="#eee" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="4"/></svg>
+                        {% endif %}
+                    </div>
+
+                    <div class="cart-meta">
+                        <a href="{{ item.url }}" class="cart-title">{{ item.product.title }}</a>
+                        
+                        {% if item.variant_title != blank %}
+                            <div class="cart-variant">{{ item.variant_title }}</div>
+                        {% endif %}
+                        <div class="cart-actions">
+                            <!-- Update quantity: uses the /cart/change endpoint with the line number -->
+                            <form action="/cart/change" method="post" style="display:inline-block;">
+                                <input type="hidden" name="line" value="{{ forloop.index }}">
+                                <input class="qty-input" type="number" min="0" name="quantity" value="{{ item.quantity }}" aria-label="Quantity for {{ item.product.title }}">
+                                <button type="submit" class="btn btn--muted" title="Update quantity">Update</button>
+                            </form>
+
+                            <!-- Remove (set quantity to 0) -->
+                            <form action="/cart/change" method="post" style="display:inline-block;">
+                                <input type="hidden" name="line" value="{{ forloop.index }}">
+                                <input type="hidden" name="quantity" value="0">
+                                <button type="submit" class="btn btn--muted" title="Remove item">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="cart-price">
+                        <div>{{ item.line_price | money }}</div>
+                        <div class="cart-price">
+                            <div>{{ item.line_price | money }}</div>
+                            <div class="unit-price">{{ item.price | money }} each</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <div>
+                <div>Subtotal</div>
+                <div class="subtotal">{{ cart.total_price | money }}</div>
+            </div>
+
+            <div style="display:flex; gap:12px; align-items:center;">
+                <a href="/collections/all" class="btn btn--muted">Continue shopping</a>
+                <a href="/checkout" class="btn">Checkout</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
