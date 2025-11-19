@@ -28,5 +28,7 @@
         {{ content_for_layout }}
         {% comment %} {{ 'theme.js' | asset_url | script_tag }} {% endcomment %}
         {% comment %} {{ content_for_footer }} {% endcomment %}
+
+        {% sections 'footer-group' %}
     </body>
 </html>

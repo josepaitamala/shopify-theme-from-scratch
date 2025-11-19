@@ -177,16 +177,16 @@
 
 <div class="cart-wrap">
     <div class="cart-header">
-        <h1>Your Cart ({{ cart.item_count }})</h1>
+        <h1>{{ 'cart.title' | t }} ({{ cart.item_count }})</h1>
         <div>
-            <a href="/" class="btn btn--muted">Continue shopping</a>
+            <a href="/" class="btn btn--muted">{{ 'cart.continue_shopping' | t }}</a>
         </div>
     </div>
 
     {% if cart.item_count == 0 %}
         <div class="empty-cart">
-            <p>Your cart is currently empty.</p>
-            <p><a href="/collections/all" class="btn">Browse products</a></p>
+            <p>{{ 'cart.empty' | t }}</p>
+            <p><a href="/collections/all" class="btn">{{ 'cart.browse_products' | t }}</a></p>
         </div>
     {% else %}
         <div class="cart-list">
@@ -213,14 +213,14 @@
                             <form action="/cart/change" method="post" style="display:inline-block;">
                                 <input type="hidden" name="line" value="{{ forloop.index }}">
                                 <input class="qty-input" type="number" min="0" name="quantity" value="{{ item.quantity }}" aria-label="Quantity for {{ item.product.title }}">
-                                <button type="submit" class="btn btn--muted" title="Update quantity">Update</button>
+                                <button type="submit" class="btn btn--muted" title="Update quantity">{{ 'cart.update' | t }}</button>
                             </form>
 
                             <!-- Remove (set quantity to 0) -->
                             <form action="/cart/change" method="post" style="display:inline-block;">
                                 <input type="hidden" name="line" value="{{ forloop.index }}">
                                 <input type="hidden" name="quantity" value="0">
-                                <button type="submit" class="btn btn--muted" title="Remove item">Remove</button>
+                                <button type="submit" class="btn btn--muted" title="Remove item">{{ 'cart.remove' | t }}</button>
                             </form>
                         </div>
                     </div>

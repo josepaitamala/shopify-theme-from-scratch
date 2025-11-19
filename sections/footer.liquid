@@ -1,0 +1,117 @@
+{% comment %}
+Footer section - two columns: left = menu, right = newsletter signup.
+No section settings or blocks. Includes basic responsive CSS.
+{% endcomment %}
+
+{{ 'section-footer.css' | asset_url | stylesheet_tag }}
+
+<section id="site-footer" class="site-footer" role="contentinfo">
+    <div class="site-footer__inner">
+        {% for block in section.blocks %}
+            {% case block.type %}
+                {% when 'menu' %}
+                    <div class="site-footer__col site-footer__col--menu">
+                        <h3 class="site-footer__col-title">{{ block.settings.menu_title }}</h3>
+                        {% assign menu_handle = block.settings.menu %}
+                        {% if menu_handle != blank %}
+                            {% assign menu = linklists[menu_handle] %}
+                        {% else %}
+                            {% assign menu = linklists.footer %}
+                        {% endif %}
+                        {% if menu and menu.links.size > 0 %}
+                            <nav class="footer-menu" aria-label="Footer menu">
+                                <ul class="footer-menu__list">
+                                    {% for link in menu.links %}
+                                        <li class="footer-menu__item">
+                                            <a href="{{ link.url }}" class="footer-menu__link">{{ link.title }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    </div>
+                {% when 'newsletter' %}
+                    <div class="site-footer__col site-footer__col--newsletter">
+                        <div class="newsletter">
+                            <h3 class="newsletter__title">Subscribe to our newsletter</h3>
+                            <p class="newsletter__text">Get updates, new product launches and exclusive offers.</p>
+
+                            {% form 'customer' %}
+                                <label for="newsletter-email" class="visually-hidden">Email address</label>
+                                <input
+                                    type="email"
+                                    id="newsletter-email"
+                                    name="contact[email]"
+                                    placeholder="your@email.com"
+                                    aria-label="Email address"
+                                    required
+                                    class="newsletter__input"
+                                />  
+
+                                {%- comment -%}
+                                    Optional: tag the customer as "newsletter"
+                                {%- endcomment -%}
+                                <input type="hidden" name="contact[tags]" value="newsletter">
+                                <button type="submit" class="newsletter__submit">Subscribe</button>
+                            {% endform %}
+                        </div>
+                    </div>
+            {% endcase %}
+        {% endfor %}
+    </div>
+
+    <div class="site-footer__bottom">
+        <p class="site-footer__copyright">&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}</p>
+    </div>
+</section>
+
+<style>
+    .site-footer {
+        background-color: {{ section.settings.bg_color }};
+    }
+</style>
+
+{% schema %}
+{
+    "name": "Footer",
+    "settings": [
+        {
+            "type": "color",
+            "id": "bg_color",
+            "label": "Background color",
+            "default": "#000000"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "menu",
+            "name": "Footer menu",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "menu_title",
+                    "label": "Menu Title",
+                    "default": "Quicklinks"
+                },
+                {
+                    "type": "link_list",
+                    "id": "menu",
+                    "label": "Select menu",
+                    "default": "footer"
+                }
+            ]
+        },
+        {
+            "type": "newsletter",
+            "name": "Newsletter signup",
+            "settings": []
+        }
+    ],
+    "presets": [
+        {
+            "name": "Footer",
+            "category": "Footer"
+        }
+    ]
+}
+{% endschema %}

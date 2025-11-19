@@ -15,43 +15,47 @@
         </section>
 
         <section class="product-details" aria-label="Product details">
-            <h1 class="product-title">{{ product.title }}</h1>
+            {%  for block in section.blocks %}
+                {% case block.type %}
+                    {% when 'title' %}
+                        <h1 class="product-title">{{ product.title }}</h1>
+                    {% when 'price' %}
+                        <div class="product-price">
+                            {% if product %}
+                                {% assign variant = product.selected_or_first_available_variant %}
+                                {% if variant and variant.price %}
+                                    {{ variant.price | money }}
+                                {% else %}
+                                    {{ product.price | default: 0 | money }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% when 'description' %}
+                        <div class="product-description">
+                            {% if product and product.description != blank %}
+                                {{ product.description }}
+                            {% endif %}
+                        </div>
+                    {% when 'add_to_cart' %}
+                        {% form 'product', product %}
+                            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                            <label class="meta" for="quantity">Quantity</label>
+                            <div class="quantity">
+                                <input id="quantity" name="quantity" type="number" min="1" value="1" inputmode="numeric" aria-label="Quantity">
+                            </div>
 
-            <div class="product-price">
-                {% if product %}
-                    {% assign variant = product.selected_or_first_available_variant %}
-                    {% if variant and variant.price %}
-                        {{ variant.price | money }}
-                    {% else %}
-                        {{ product.price | default: 0 | money }}
-                    {% endif %}
-                {% endif %}
-            </div>
-
-            <div class="product-description">
-                {% if product and product.description != blank %}
-                    {{ product.description }}
-                {% endif %}
-            </div>
-
-            {% form 'product', product %}
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                <label class="meta" for="quantity">Quantity</label>
-                <div class="quantity">
-                    <input id="quantity" name="quantity" type="number" min="1" value="1" inputmode="numeric" aria-label="Quantity">
-                </div>
-
-                {% if product.available %}
-                    <button type="submit" class="add-to-cart">Add to cart</button>
-                {% else %}
-                    <button type="button" class="add-to-cart" disabled>Sold out</button>
-                {% endif %}
-            {% endform %}
-
-            <div class="meta">
-                SKU: {{ product.selected_or_first_available_variant.sku | default: "N/A" }}
-            </div>
-        
+                            {% if product.available %}
+                                <button type="submit" class="add-to-cart">Add to cart</button>
+                            {% else %}
+                                <button type="button" class="add-to-cart" disabled>Sold out</button>
+                            {% endif %}
+                        {% endform %}
+                    {% when 'sku' %}
+                        <div class="meta">
+                            SKU: {{ product.selected_or_first_available_variant.sku | default: "N/A" }}
+                        </div>
+                {% endcase %}
+            {% endfor %}        
         </section>
     </div>
 </main>
@@ -60,7 +64,28 @@
 {
     "name": "Main product",
     "settings": [],
-    "blocks": [],
+    "blocks": [
+        {
+            "type": "title",
+            "name": "Title",
+        },
+        {
+            "type": "price",
+            "name": "Price",
+        },
+        {
+            "type": "description",
+            "name": "Description",
+        },
+        {
+            "type": "add_to_cart",
+            "name": "Add to cart button",
+        },
+        {
+            "type": "sku",
+            "name": "SKU",
+        }
+    ],
     "presets": [
         {
             "name": "Main product",

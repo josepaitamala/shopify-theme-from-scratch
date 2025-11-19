@@ -1,0 +1,9 @@
+{
+    "cart": {
+        "title": "Tu carrito",
+        "empty": "Tu carrito está vacío.",
+        "remove": "Eliminar",
+        "continue_shopping": "Seguir comprando",
+        "browse_products": "Explorar productos"
+    }
+}
