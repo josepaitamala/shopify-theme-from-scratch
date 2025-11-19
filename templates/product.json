@@ -11,6 +11,35 @@
   "sections": {
     "main": {
       "type": "main-product",
+      "blocks": {
+        "title_6bfhHq": {
+          "type": "title",
+          "settings": {}
+        },
+        "price_QnmPbr": {
+          "type": "price",
+          "settings": {}
+        },
+        "description_KhKEr4": {
+          "type": "description",
+          "settings": {}
+        },
+        "add_to_cart_Yxta6a": {
+          "type": "add_to_cart",
+          "settings": {}
+        },
+        "sku_dR8GxW": {
+          "type": "sku",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "title_6bfhHq",
+        "price_QnmPbr",
+        "description_KhKEr4",
+        "add_to_cart_Yxta6a",
+        "sku_dR8GxW"
+      ],
       "settings": {}
     },
     "featured_collection_UdKKgq": {
