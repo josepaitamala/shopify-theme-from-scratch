@@ -29,5 +29,22 @@
                 "info": "Upload a favicon (recommended 32x32)."
             }
         ]
+    },
+    {
+        "name": "Typography",
+        "settings": [
+            {
+                "type": "font_picker",
+                "id": "body_font",
+                "label": "Body font",
+                "default": "helvetica_n4"
+            },
+            {
+                "type": "font_picker",
+                "id": "heading_font",
+                "label": "Heading font",
+                "default": "helvetica_n4"
+            }
+        ]
     }
 ]

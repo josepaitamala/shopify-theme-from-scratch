@@ -8,6 +8,7 @@ File: sections/hero.liquid
 
 {{ 'section-hero.css' | asset_url | stylesheet_tag }}
 
+
 <section id="hero-{{ section.id }}" class="hero-slider" data-section-id="{{ section.id }}">
     <div class="hero-slider__viewport" role="region" aria-label="{{ section.settings.aria_label }}">
         {% assign slides = section.blocks %}
@@ -54,8 +55,8 @@ File: sections/hero.liquid
     <div class="hero-slider__controls" aria-hidden="false">
         {% if section.settings.show_arrows %}
             <div class="hero-slider__arrows">
-                <button class="hero-slider__arrow hero-slider__prev" type="button" aria-label="Previous slide">&larr;</button>
-                <button class="hero-slider__arrow hero-slider__next" type="button" aria-label="Next slide">&rarr;</button>
+                <button class="hero-slider__arrow hero-slider__prev" type="button" aria-label="Previous slide"></button>
+                <button class="hero-slider__arrow hero-slider__next" type="button" aria-label="Next slide"></button>
             </div>
         {% endif %}
         {% if section.settings.show_dots %}

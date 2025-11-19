@@ -1,10 +1,81 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
-    "sections": {
-        "hero": {
-            "type": "hero"
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "slide_wjmgy4": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/theme_cover_image.jpg",
+            "image_alt": "",
+            "subheading": "Subheading",
+            "heading": "Heading",
+            "text": "this is the body text",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections",
+            "text_alignment": "center",
+            "overlay_color": "",
+            "overlay_opacity": 0.3,
+            "text_color": "#ffffff"
+          }
+        },
+        "slide_cteRnT": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/balos-gramvousa-crete.jpg",
+            "image_alt": "",
+            "subheading": "Another subheading",
+            "heading": "Heading Text",
+            "text": "Hello this is the description",
+            "button_text": "Shop Now",
+            "button_link": "shopify://pages/about-us",
+            "text_alignment": "center",
+            "overlay_color": "",
+            "overlay_opacity": 0.3,
+            "text_color": "#ffffff"
+          }
         }
+      },
+      "block_order": [
+        "slide_wjmgy4",
+        "slide_cteRnT"
+      ],
+      "settings": {
+        "aria_label": "Hero slider",
+        "height": "60vh",
+        "autoplay": true,
+        "autoplay_speed": 5000,
+        "show_arrows": true,
+        "show_dots": true,
+        "overlay_color": "#00000059",
+        "overlay_opacity": 0.3,
+        "text_alignment": "center",
+        "text_color": "#ffffff"
+      }
     },
-    "order": [
-        "hero"
-    ]
+    "featured_collection_P3knrj": {
+      "type": "featured-collection",
+      "name": "Featured collection",
+      "settings": {
+        "section_title": "Featured collection",
+        "collection": "automated-collection",
+        "products_to_show": 4,
+        "show_vendor": true,
+        "show_price": true
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured_collection_P3knrj"
+  ]
 }

@@ -1,0 +1,97 @@
+{% assign featured_collection = collections[section.settings.collection] %}
+
+{{ 'section-featured-collection.css' | asset_url | stylesheet_tag }}
+
+<div class="container">
+    <section id="featured-collection-{{ section.id }}" class="featured-collection-section">
+        <div class="featured-collection-inner">
+            {% if section.settings.section_title != blank %}
+                <h2 class="featured-collection-title">{{ section.settings.section_title }}</h2>
+            {% endif %}
+
+            {% if featured_collection and featured_collection.products_count.size > 0 %}
+                <div class="featured-collection-grid">
+                    {% for product in featured_collection.products limit: section.settings.products_to_show %}
+                        <article class="featured-product-card">
+                            <a href="{{ product.url }}" class="featured-product-image-link" aria-label="{{ product.title }}">
+                                {% if product.featured_image %}
+                                    <img src="{{ product.featured_image | img_url: '400x' }}" alt="{{ product.featured_image.alt | escape }}" />
+                                {% else %}
+                                    <img src="https://placehold.co/400x400" alt="Placeholder image for {{ product.title | escape }}" />
+                                {% endif %}
+                            </a>
+
+                            <div class="featured-product-info">
+                                <a href="{{ product.url }}" class="featured-product-title">{{ product.title }}</a>
+
+                                {% if section.settings.show_vendor %}
+                                    <div class="featured-product-vendor">{{ product.vendor }}</div>
+                                {% endif %}
+
+                                {% if section.settings.show_price %}
+                                    <div class="featured-product-price">
+                                        {% if product.compare_at_price > product.price %}
+                                            <span class="price--sale">{{ product.price | money }}</span>
+                                            <span class="price--compare">{{ product.compare_at_price | money }}</span>
+                                        {% else %}
+                                            <span class="price">{{ product.price | money }}</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="featured-collection-empty">
+                    <p>Please select a collection in this section's settings.</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% schema %}
+{
+    "name": "Featured collection",
+    "settings": [
+        {
+            "type": "text",
+            "id": "section_title",
+            "label": "Heading",
+            "default": "Featured collection"
+        },
+        {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+        },
+        {
+            "type": "range",
+            "id": "products_to_show",
+            "label": "Products to show",
+            "min": 1,
+            "max": 12,
+            "step": 1,
+            "default": 4
+        },
+        {
+            "type": "checkbox",
+            "id": "show_vendor",
+            "label": "Show vendor",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_price",
+            "label": "Show price",
+            "default": true
+        }
+    ],
+    "presets": [
+        {
+            "name": "Featured collection",
+            "category": "Collections"
+        }
+    ]
+}
+{% endschema %}

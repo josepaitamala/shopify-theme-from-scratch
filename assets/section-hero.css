@@ -2,6 +2,120 @@
 .hero-slider {
     position: relative;
     overflow: hidden;
+
+    /* control / dot design tokens */
+    --hero-control-size: 44px;
+    --hero-control-bg: rgba(255,255,255,0.06);
+    --hero-control-fg: rgba(255,255,255,0.95);
+    --hero-control-accent: rgba(0,0,0,0.25);
+    --hero-dot-bg: rgba(255,255,255,0.18);
+    --hero-dot-active: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.9) 60%);
+    --hero-shadow: 0 8px 24px rgba(10, 10, 10, 0.45);
+}
+
+/* Modern circular glassy arrows (higher specificity so these override later simple rules) */
+.hero-slider .hero-slider__arrows .hero-slider__arrow {
+    width: var(--hero-control-size);
+    height: var(--hero-control-size);
+    padding: 0;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--hero-control-bg);
+    color: var(--hero-control-fg);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: var(--hero-shadow);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    transition: transform .16s ease, background .16s ease, box-shadow .16s ease, opacity .12s ease;
+}
+
+/* subtle lift on hover/focus */
+.hero-slider .hero-slider__arrows .hero-slider__arrow:hover,
+.hero-slider .hero-slider__arrows .hero-slider__arrow:focus {
+    background: rgba(255,255,255,0.10);
+    box-shadow: 0 12px 30px rgba(10,10,10,0.5);
+    outline: none;
+}
+
+/* simple chevron drawn with borders so no extra markup required */
+.hero-slider .hero-slider__arrows .hero-slider__arrow::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(-45deg); /* points to the right by default */
+}
+
+/* first arrow = previous (point left), second = next (point right) */
+.hero-slider .hero-slider__arrows .hero-slider__arrow:first-child::before {
+    transform: rotate(135deg); /* point left */
+}
+
+/* reduced visual noise for disabled state if used */
+.hero-slider .hero-slider__arrows .hero-slider__arrow[disabled],
+.hero-slider .hero-slider__arrows .hero-slider__arrow[aria-disabled="true"] {
+    opacity: .45;
+    pointer-events: none;
+    transform: none;
+}
+
+/* Modern minimal dots */
+.hero-slider .hero-slider__dots {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-left: auto;
+    padding: 0 .25rem;
+    backdrop-filter: blur(4px);
+}
+
+/* pill-like dot shell with inner active indicator */
+.hero-slider .hero-slider__dots .hero-slider__dot {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    position: relative;
+    cursor: pointer;
+    transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+/* inner indicator using pseudo-element */
+.hero-slider .hero-slider__dots .hero-slider__dot::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    transition: transform .18s ease, opacity .18s ease, background .18s ease;
+    transform: scale(.6);
+    opacity: .9;
+}
+
+/* active dot stands out with a soft glow and scale */
+.hero-slider .hero-slider__dots .hero-slider__dot.is-active {
+    transform: scale(1.15);
+    border-color: rgba(255,255,255,0.15);
+}
+
+.hero-slider .hero-slider__dots .hero-slider__dot.is-active::after {
+    transform: scale(1);
+    background: var(--hero-dot-active);
+    opacity: 1;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 12px rgba(255,255,255,0.06);
+}
+
+/* slightly larger controls on desktop */
+@media (min-width: 1024px) {
+    .hero-slider {
+        --hero-control-size: 52px;
+    }
 }
 
 .hero-slider__viewport {

@@ -11,6 +11,16 @@
         {% endif %}
 
         {{ 'theme.css' | asset_url | stylesheet_tag }}
+        {% style %}
+          {{ settings.heading_font | font_face: font_display: 'swap' }}
+          {{ settings.body_font | font_face: font_display: 'swap' }}
+
+            :root {
+                --font-heading--family: {{ settings.heading_font.family | default: 'inherit' }};
+                --font-body--family: {{ settings.body_font.family | default: 'inherit' }};
+            }
+        {% endstyle %}
+
         {{ content_for_header }}
     </head>
     <body>
