@@ -10,11 +10,11 @@
             <link rel="icon" href="{{ 'favicon.ico' | asset_url }}" />
         {% endif %}
 
-        {% comment %} {{ 'theme.css' | asset_url | stylesheet_tag }} {% endcomment %}
+        {{ 'theme.css' | asset_url | stylesheet_tag }}
         {{ content_for_header }}
     </head>
     <body>
-        {% section 'header' %}
+        {% sections 'header-group' %}
         {{ content_for_layout }}
         {% comment %} {{ 'theme.js' | asset_url | script_tag }} {% endcomment %}
         {% comment %} {{ content_for_footer }} {% endcomment %}

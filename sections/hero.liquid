@@ -1,0 +1,342 @@
+{% comment %}
+Section: Hero Slider
+File: sections/hero.liquid
+- Editable slides as blocks
+- Upload images and videos per slide
+- Settings for autoplay, speed, arrows, dots, height, overlay, alignment, colors
+{% endcomment %}
+
+{{ 'section-hero.css' | asset_url | stylesheet_tag }}
+
+<section id="hero-{{ section.id }}" class="hero-slider" data-section-id="{{ section.id }}">
+    <div class="hero-slider__viewport" role="region" aria-label="{{ section.settings.aria_label }}">
+        {% assign slides = section.blocks %}
+        {% if slides.size == 0 %}
+            <div class="hero-slider__slide is-active">
+                <div class="hero-slider__overlay" style="background: rgba(0,0,0,0.35);"></div>
+                <div class="hero-slider__content" style="--hero-text-align:center;">
+                    <h2 class="hero-slider__heading">Add slides in the theme editor</h2>
+                    <p class="hero-slider__subheading">This hero supports images and videos per slide.</p>
+                </div>
+            </div>
+        {% else %}
+            {% for block in section.blocks %}
+                <div class="hero-slider__slide {% if forloop.first %}is-active{% endif %}" data-slide-index="{{ forloop.index0 }}" role="group" aria-roledescription="slide" aria-label="Slide {{ forloop.index }}">
+                    {% comment %} Media: prefer video if provided; otherwise image {% endcomment %}
+                    {% if block.settings.video %}
+                        <video class="hero-slider__media" src="{{ block.settings.video | file_url }}" {% if section.settings.autoplay %}muted autoplay playsinline loop{% else %}controls playsinline{% endif %}></video>
+                    {% elsif block.settings.image %}
+                        <img class="hero-slider__media" src="{{ block.settings.image | img_url: '2048x' }}" alt="{{ block.settings.image_alt | escape }}">
+                    {% endif %}
+
+                    <div class="hero-slider__overlay" style="background: {{ block.settings.overlay_color | default: section.settings.overlay_color }}; opacity: {{ block.settings.overlay_opacity | default: section.settings.overlay_opacity }};"></div>
+
+                    <div class="hero-slider__content"
+                             style="--hero-text-align: {{ block.settings.text_alignment | default: section.settings.text_alignment }}; --hero-text-color: {{ block.settings.text_color | default: section.settings.text_color }};">
+                        {% if block.settings.subheading != blank %}
+                            <div class="hero-slider__subheading">{{ block.settings.subheading }}</div>
+                        {% endif %}
+                        {% if block.settings.heading != blank %}
+                            <h2 class="hero-slider__heading">{{ block.settings.heading }}</h2>
+                        {% endif %}
+                        {% if block.settings.text != blank %}
+                            <div class="hero-slider__text">{{ block.settings.text }}</div>
+                        {% endif %}
+                        {% if block.settings.button_text != blank %}
+                            <a href="{{ block.settings.button_link }}" class="hero-slider__btn" aria-label="{{ block.settings.button_text }}">{{ block.settings.button_text }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="hero-slider__controls" aria-hidden="false">
+        {% if section.settings.show_arrows %}
+            <div class="hero-slider__arrows">
+                <button class="hero-slider__arrow hero-slider__prev" type="button" aria-label="Previous slide">&larr;</button>
+                <button class="hero-slider__arrow hero-slider__next" type="button" aria-label="Next slide">&rarr;</button>
+            </div>
+        {% endif %}
+        {% if section.settings.show_dots %}
+            <div class="hero-slider__dots" aria-hidden="false">
+                {% for block in section.blocks %}
+                    <button class="hero-slider__dot {% if forloop.first %}is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}"></button>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        (function(){ 
+            var sectionId = {{ section.id | json }};
+            var root = document.getElementById('hero-{{ section.id }}');
+            if (!root) return;
+
+            console.log('root', root);
+            var slides = root.querySelectorAll('.hero-slider__slide');
+            var dots = root.querySelectorAll('.hero-slider__dot');
+            var prev = root.querySelector('.hero-slider__prev');
+            var next = root.querySelector('.hero-slider__next');
+            var current = 0;
+            var autoplay = {{ section.settings.autoplay }};
+            var interval = Number({{ section.settings.autoplay_speed }}) || 5000;
+            var timer = null;
+
+            function show(index){
+                if (index < 0) index = slides.length - 1;
+                if (index >= slides.length) index = 0;
+                // hide old
+                slides[current].classList.remove('is-active');
+                if (dots[current]) dots[current].classList.remove('is-active');
+                // pause video in previous
+                var prevV = slides[current].querySelector('video');
+                if (prevV && !prevV.paused) try{ prevV.pause(); }catch(e){}
+                // show new
+                slides[index].classList.add('is-active');
+                if (dots[index]) dots[index].classList.add('is-active');
+                // play video on new if autoplay is enabled and video exists
+                var newV = slides[index].querySelector('video');
+                if (newV){
+                    if (autoplay) {
+                        newV.muted = true;
+                        var p = newV.play();
+                        if (p && p.catch) p.catch(function(){});
+                    }
+                }
+                current = index;
+            }
+
+            function nextSlide(){
+                console.log('nextSlide');
+                show(current+1);
+            }
+            function prevSlide(){
+                console.log('prevSlide');
+                show(current-1);
+            }
+
+            if (next) next.addEventListener('click', function(){ nextSlide(); resetTimer(); });
+            if (prev) prev.addEventListener('click', function(){ prevSlide(); resetTimer(); });
+
+            dots.forEach(function(dot){
+                dot.addEventListener('click', function(){ var i = Number(this.getAttribute('data-dot-index')); show(i); resetTimer(); });
+            });
+
+            function startTimer(){
+                if (!autoplay || slides.length < 2) return;
+                timer = setInterval(nextSlide, interval);
+            }
+            function resetTimer(){
+                if (timer) { clearInterval(timer); timer = null; }
+                startTimer();
+            }
+
+            // pause autoplay on hover
+            root.addEventListener('mouseenter', function(){ if (timer) clearInterval(timer); });
+            root.addEventListener('mouseleave', function(){ resetTimer(); });
+
+            // set viewport height variable
+            var viewport = root.querySelector('.hero-slider__viewport');
+            if (viewport) {
+                viewport.style.setProperty('--hero-height', '{{ section.settings.height }}');
+            }
+
+            // initialize first slide video play if autoplay
+            var firstVideo = slides[0] && slides[0].querySelector('video');
+            if (firstVideo && autoplay) {
+                firstVideo.muted = true;
+                var p = firstVideo.play();
+                if (p && p.catch) p.catch(function(){});
+            }
+
+            startTimer();
+
+        })();
+    </script>
+</section>
+
+{% schema %}
+{
+    "name": "Hero slider",
+    "max_blocks": 5,
+    "settings": [
+        {
+            "type": "text",
+            "id": "aria_label",
+            "label": "Aria label",
+            "default": "Hero slider"
+        },
+        {
+            "type": "select",
+            "id": "height",
+            "label": "Height",
+            "options": [
+                { "value": "40vh", "label": "Small" },
+                { "value": "60vh", "label": "Medium" },
+                { "value": "80vh", "label": "Large" }
+            ],
+            "default": "60vh"
+        },
+        {
+            "type": "checkbox",
+            "id": "autoplay",
+            "label": "Autoplay slides",
+            "default": true
+        },
+        {
+            "type": "number",
+            "id": "autoplay_speed",
+            "label": "Autoplay speed (ms)",
+            "default": 5000
+        },
+        {
+            "type": "checkbox",
+            "id": "show_arrows",
+            "label": "Show arrows",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_dots",
+            "label": "Show dots",
+            "default": true
+        },
+        {
+            "type": "color",
+            "id": "overlay_color",
+            "label": "Default overlay color",
+            "default": "rgba(0,0,0,0.35)"
+        },
+        {
+            "type": "range",
+            "id": "overlay_opacity",
+            "label": "Default overlay opacity",
+            "min": 0,
+            "max": 1,
+            "step": 0.1,
+            "default": 0.3
+        },
+        {
+            "type": "select",
+            "id": "text_alignment",
+            "label": "Default text alignment",
+            "options":[
+                { "value":"left","label":"Left" },
+                { "value":"center","label":"Center" },
+                { "value":"right","label":"Right" }
+            ],
+            "default":"center"
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Default text color",
+            "default": "#ffffff"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "slide",
+            "name": "Slide",
+            "limit": 5,
+            "settings": [
+                { 
+                    "type": "image_picker",
+                    "id": "image",
+                    "label": "Image" 
+                },
+                {
+                    "type": "text",
+                    "id": "image_alt",
+                    "label": "Image alt text"
+                },
+                {
+                    "type": "video",
+                    "id": "video",
+                    "label": "Video file (mp4/webm) - optional"
+                },
+                {
+                    "type": "text",
+                    "id": "subheading",
+                    "label": "Subheading"
+                },
+                {
+                    "type": "text",
+                    "id": "heading",
+                    "label": "Heading"
+                },
+                {
+                    "type": "textarea",
+                    "id": "text",
+                    "label": "Body text"
+                },
+                {
+                    "type": "text",
+                    "id": "button_text",
+                    "label": "Button text"
+                },
+                {
+                    "type": "url",
+                    "id": "button_link",
+                    "label": "Button link"
+                },
+                {
+                    "type": "select",
+                    "id": "text_alignment",
+                    "label": "Text alignment",
+                    "options": [
+                        {
+                            "value": "left",
+                            "label": "Left"
+                        },
+                        {
+                            "value": "center",
+                            "label": "Center"
+                        },
+                        {
+                            "value": "right",
+                            "label": "Right"
+                        }
+                    ],
+                    "default": "center"
+                },
+                {
+                    "type": "color",
+                    "id": "overlay_color",
+                    "label": "Overlay color (override)"
+                },
+                {
+                    "type": "range",
+                    "id": "overlay_opacity",
+                    "label": "Overlay opacity (override)",
+                    "min": 0,
+                    "max": 1,
+                    "step": 0.1,
+                    "default": 0.3
+                },
+                {
+                    "type": "color",
+                    "id": "text_color",
+                    "label": "Text color (override)",
+                    "default": "#ffffff"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Hero slider",
+            "category": "General",
+            "blocks": [
+                { 
+                    "type": "slide" 
+                },
+                { 
+                    "type": "slide" 
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

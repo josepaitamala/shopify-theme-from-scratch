@@ -1,0 +1,68 @@
+{% comment %}
+Simple collection template: title + 3-column product grid
+Save as /templates/collection.liquid
+{% endcomment %}
+
+{% if collection %}
+    <main class="collection-page">
+        <div class="container">
+            <header class="collection-header">
+                <h1 class="collection-title">{{ collection.title }}</h1>
+                {% if collection.description != blank %}
+                    <div class="collection-description">{{ collection.description }}</div>
+                {% endif %}
+            </header>
+
+            {% paginate collection.products by 12 %}
+                <section class="product-grid">
+                    {% for product in collection.products %}
+                        <article class="product-item">
+                            <a href="{{ product.url }}" class="product-link">
+
+                                {% if product.featured_image == blank %}
+                                    <img
+                                        src="https://placehold.co/480x480"
+                                        alt="Placeholder image for {{ product.title | escape }}"
+                                        class="product-image"
+                                    />
+                                {% else %}
+                                    <img
+                                        src="{{ product.featured_image | img_url: '480x480' }}"
+                                        alt="{{ product.featured_image.alt | escape }}"
+                                        class="product-image"
+                                    />
+                                {% endif %}
+                                <h2 class="product-title">{{ product.title }}</h2>
+                                <div class="product-price">
+                                    {{ product.selected_or_first_available_variant.price | money }}
+                                </div>
+                            </a>
+                        </article>
+                    {% endfor %}
+                </section>
+
+                {% if paginate.pages > 1 %}
+                    <nav class="pagination" role="navigation" aria-label="Pagination">
+                        {% if paginate.previous %}
+                            <a href="{{ paginate.previous.url }}" class="prev">Previous</a>
+                        {% endif %}
+                        {% for part in paginate.parts %}
+                            {% if part.is_link %}
+                                <a href="{{ part.url }}">{{ part.title }}</a>
+                            {% else %}
+                                <span class="current">{{ part.title }}</span>
+                            {% endif %}
+                        {% endfor %}
+                        {% if paginate.next %}
+                            <a href="{{ paginate.next.url }}" class="next">Next</a>
+                        {% endif %}
+                    </nav>
+                {% endif %}
+            {% endpaginate %}
+        </div>
+    </main>
+{% else %}
+    <main class="collection-page">
+        <h1>Collection not found</h1>
+    </main>
+{% endif %}

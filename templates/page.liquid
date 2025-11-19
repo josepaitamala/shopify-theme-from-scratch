@@ -1,0 +1,26 @@
+{% layout 'theme' %}
+
+{%- comment -%}
+    Basic page template
+    - Uses the theme layout
+    - Renders the page title and content
+    - Keeps minimal semantic markup for styling
+{%- endcomment -%}
+
+<main id="MainContent" role="main" class="page-template">
+    <div class="container">
+        <header class="page-header">
+            <h1 class="page-title">{{ page.title }}</h1>
+        </header>
+
+        <section class="page-content">
+            {{ page.content }}
+        </section>
+
+        {%- if page.metafields and page.metafields.custom and page.metafields.custom.extra_html -%}
+            <aside class="page-extra">
+                {{ page.metafields.custom.extra_html }}
+            </aside>
+        {%- endif -%}
+    </div>
+</main>

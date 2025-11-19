@@ -1,0 +1,31 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header Group",
+  "sections": {
+    "announcement_bar_fVBDea": {
+      "type": "announcement-bar",
+      "name": "Announcement bar",
+      "settings": {
+        "announcement_text": "<p>Free shipping on orders over $50 — <a href=\"/collections/all\">Shop now</a></p>",
+        "background_color": "#820000"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {}
+    }
+  },
+  "order": [
+    "announcement_bar_fVBDea",
+    "header"
+  ]
+}

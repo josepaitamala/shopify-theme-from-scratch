@@ -1,0 +1,36 @@
+<section
+    id="announcement-bar-{{ section.id }}"
+    class="announcement-bar"
+    role="region"
+    aria-label="Announcement bar"
+    style="background-color: {{ section.settings.background_color }};">
+    <div class="announcement-bar__inner">
+        {{ section.settings.announcement_text }}
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Announcement bar",
+    "settings": [
+        {
+            "type": "richtext",
+            "id": "announcement_text",
+            "label": "Announcement text",
+            "default": "<p>Free shipping on orders over $50 — <a href=\"/collections/all\">Shop now</a></p>"
+        },
+        {
+            "type": "color",
+            "id": "background_color",
+            "label": "Background colour",
+            "default": "#111111"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Announcement bar",
+            "category": "Header"
+        }
+    ]
+}
+{% endschema %}
