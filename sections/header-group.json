@@ -24,7 +24,8 @@
       "settings": {}
     },
     "side_cart": {
-      "type": "sidebar"
+      "type": "sidebar",
+      "settings": {}
     }
   },
   "order": [

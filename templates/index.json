@@ -72,10 +72,194 @@
         "show_vendor": true,
         "show_price": true
       }
+    },
+    "custom_section_8cW7fg": {
+      "type": "custom-section",
+      "blocks": {
+        "group_whMVCJ": {
+          "type": "group",
+          "name": "Group",
+          "settings": {},
+          "blocks": {
+            "image_zDqPUi": {
+              "type": "image",
+              "name": "Image",
+              "settings": {
+                "image": "shopify://shop_images/Main_9129b69a-0c7b-4f66-b6cf-c4222f18028a.jpg",
+                "alt": ""
+              },
+              "blocks": {}
+            },
+            "text_t79QNj": {
+              "type": "text",
+              "name": "Text",
+              "settings": {
+                "text": "Add your text here",
+                "rich_text": false,
+                "element": "h1",
+                "classes": "",
+                "element_id": ""
+              },
+              "blocks": {}
+            },
+            "text_YK7TDd": {
+              "type": "text",
+              "name": "Text",
+              "settings": {
+                "text": "Add your text here",
+                "rich_text": false,
+                "element": "p",
+                "classes": "",
+                "element_id": ""
+              },
+              "blocks": {}
+            },
+            "button_EzykeD": {
+              "type": "button",
+              "name": "Button",
+              "settings": {
+                "text": "Shop now",
+                "link": "#",
+                "background_color": "#111827",
+                "text_color": "#ffffff"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "image_zDqPUi",
+            "text_t79QNj",
+            "text_YK7TDd",
+            "button_EzykeD"
+          ]
+        },
+        "group_46txDU": {
+          "type": "group",
+          "name": "Group",
+          "settings": {},
+          "blocks": {
+            "image_g4KM3V": {
+              "type": "image",
+              "name": "Image",
+              "settings": {
+                "image": "shopify://shop_images/HNS_T0223_Black_Front_30ffa20a-36a1-48aa-82ac-3d6d683d61b1.jpg",
+                "alt": ""
+              },
+              "blocks": {}
+            },
+            "text_jpzgPV": {
+              "type": "text",
+              "name": "Text",
+              "settings": {
+                "text": "Add your text here",
+                "rich_text": false,
+                "element": "h1",
+                "classes": "",
+                "element_id": ""
+              },
+              "blocks": {}
+            },
+            "text_9RUMVt": {
+              "type": "text",
+              "name": "Text",
+              "settings": {
+                "text": "Add your text here",
+                "rich_text": false,
+                "element": "p",
+                "classes": "",
+                "element_id": ""
+              },
+              "blocks": {}
+            },
+            "button_Lz9Fxn": {
+              "type": "button",
+              "name": "Button",
+              "settings": {
+                "text": "Shop now",
+                "link": "#",
+                "background_color": "#111827",
+                "text_color": "#ffffff"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "image_g4KM3V",
+            "text_jpzgPV",
+            "text_9RUMVt",
+            "button_Lz9Fxn"
+          ]
+        },
+        "group_bJwKJ4": {
+          "type": "group",
+          "name": "Group",
+          "settings": {},
+          "blocks": {
+            "image_bWxFtE": {
+              "type": "image",
+              "name": "Image",
+              "settings": {
+                "image": "shopify://shop_images/Main_b13ad453-477c-4ed1-9b43-81f3345adfd6.jpg",
+                "alt": ""
+              },
+              "blocks": {}
+            },
+            "text_eHLDyY": {
+              "type": "text",
+              "name": "Text",
+              "settings": {
+                "text": "Add your text here",
+                "rich_text": false,
+                "element": "h1",
+                "classes": "",
+                "element_id": ""
+              },
+              "blocks": {}
+            },
+            "text_byDNMk": {
+              "type": "text",
+              "name": "Text",
+              "settings": {
+                "text": "Add your text here",
+                "rich_text": false,
+                "element": "p",
+                "classes": "",
+                "element_id": ""
+              },
+              "blocks": {}
+            },
+            "button_CWYqye": {
+              "type": "button",
+              "name": "Button",
+              "settings": {
+                "text": "Shop now",
+                "link": "#",
+                "background_color": "#111827",
+                "text_color": "#ffffff"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "image_bWxFtE",
+            "text_eHLDyY",
+            "text_byDNMk",
+            "button_CWYqye"
+          ]
+        }
+      },
+      "block_order": [
+        "group_whMVCJ",
+        "group_46txDU",
+        "group_bJwKJ4"
+      ],
+      "name": "Custom Section",
+      "settings": {}
     }
   },
   "order": [
     "hero",
-    "featured_collection_P3knrj"
+    "featured_collection_P3knrj",
+    "custom_section_8cW7fg"
   ]
 }
