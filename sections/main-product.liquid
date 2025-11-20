@@ -4,11 +4,17 @@
     Uses placeholder content when product or images are missing.
 {% endcomment %}
 
+{{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+
 <main class="product-page" role="main">
     <div class="container container--flex-dir-row">
         <section class="product-media" aria-label="Product images">
             {% if product and product.featured_image %}
-                <img src="{{ product.featured_image | img_url: '1024x1024' }}" alt="{{ product.title | escape }}">
+                <img
+                    src="{{ product.selected_or_first_available_variant.image | default: product.featured_image | img_url: '1024x1024' }}"
+                    alt="{{ product.title | escape }}"
+                    class="product-image"
+                >
             {% else %}
                 <img src="https://placehold.co/800x800" alt="Placeholder product image">
             {% endif %}
@@ -37,19 +43,50 @@
                             {% endif %}
                         </div>
                     {% when 'add_to_cart' %}
-                        {% form 'product', product %}
-                            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                            <label class="meta" for="quantity">Quantity</label>
-                            <div class="quantity">
-                                <input id="quantity" name="quantity" type="number" min="1" value="1" inputmode="numeric" aria-label="Quantity">
-                            </div>
+                        <product-form
+                            variant-id="{{ product.selected_or_first_available_variant.id }}"
+                            product-handle="{{ product.handle }}"
+                        >
+                            <script type="application/json" id="product-variants-json">
+                                {{ product.variants | json }}
+                            </script>
 
-                            {% if product.available %}
-                                <button type="submit" class="add-to-cart">Add to cart</button>
-                            {% else %}
-                                <button type="button" class="add-to-cart" disabled>Sold out</button>
-                            {% endif %}
-                        {% endform %}
+                            {% form 'product', product %}
+                                {% if product.has_only_default_variant %}
+                                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                                {% else %}
+                                    <div class="product-variants">
+                                        <fieldset>
+                                            {% for variant in product.variants %}
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        name="id"
+                                                        value="{{ variant.id }}"
+                                                        class="product-variants__radio"
+                                                        {% if variant.available == false %}disabled{% endif %}
+                                                        {% if variant.id == product.selected_or_first_available_variant.id %}checked{% endif %}
+                                                    />
+                                                    <span class="product-variants__title">{{ variant.title }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </fieldset>
+                                    </div>
+                                {% endif %}
+                                
+                                <label class="meta" for="quantity">Quantity</label>
+                                <div class="quantity">
+                                    <input id="quantity" name="quantity" type="number" min="1" value="1" inputmode="numeric" aria-label="Quantity">
+                                </div>
+
+                                {% if product.available %}
+                                    <button type="submit" class="add-to-cart">Add to cart</button>
+                                {% else %}
+                                    <button type="button" class="add-to-cart" disabled>Sold out</button>
+                                {% endif %}
+                            {% endform %}
+                        </product-form>
+                        
                     {% when 'sku' %}
                         <div class="meta">
                             SKU: {{ product.selected_or_first_available_variant.sku | default: "N/A" }}
@@ -65,6 +102,9 @@
     "name": "Main product",
     "settings": [],
     "blocks": [
+        {
+            "type": "@app"
+        },
         {
             "type": "title",
             "name": "Title",

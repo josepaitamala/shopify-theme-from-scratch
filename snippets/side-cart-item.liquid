@@ -1,0 +1,280 @@
+{% comment %}
+    side-cart-item.liquid
+    Expects a cart item in the variable "item" (e.g. for cart.items)
+    Provides markup + ARIA + data attributes for JS-driven side-cart behavior.
+{% endcomment %}
+<style>
+/* Side cart item — lightweight, theme-neutral styles */
+.side-cart-item {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #eef0f2;
+    align-items: flex-start;
+    background: #fff;
+    color: #111;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Remove button (top-right) */
+.side-cart-item__remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    padding: 6px;
+    line-height: 1;
+    font-size: 18px;
+    color: #9b9b9b;
+    cursor: pointer;
+    transition: color .15s ease, transform .08s ease;
+}
+.side-cart-item__remove:hover,
+.side-cart-item__remove:focus {
+    color: #444;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+/* Media / image */
+.side-cart-item__media {
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f6f7f8;
+    text-decoration: none;
+}
+.side-cart-item__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Content column */
+.side-cart-item__content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Title and variant */
+.side-cart-item__title {
+    color: #111;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.side-cart-item__variant {
+    color: #6b6f76;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+/* Options list */
+.side-cart-item__options {
+    list-style: none;
+    margin: 0 0 6px 0;
+    padding: 0;
+    display: block;
+    color: #6b6f76;
+    font-size: 13px;
+}
+.side-cart-item__option {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 2px;
+}
+.side-cart-item__option-name {
+    font-weight: 600;
+    color: #444;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+.side-cart-item__option-value {
+    color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Meta row: price + quantity */
+.side-cart-item__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+}
+
+/* Price */
+.side-cart-item__price {
+    font-weight: 700;
+    color: #111;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Quantity controls */
+.side-cart-item__quantity {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 2px;
+    background: #fafafa;
+}
+.side-cart-item__qty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background .12s ease, color .12s ease;
+}
+.side-cart-item__qty-btn:hover,
+.side-cart-item__qty-btn:focus {
+    background: rgba(0,0,0,0.04);
+    outline: none;
+}
+.side-cart-item__qty-input {
+    width: 48px;
+    min-width: 48px;
+    height: 28px;
+    padding: 0 6px;
+    border: none;
+    text-align: center;
+    background: transparent;
+    font-size: 14px;
+    -moz-appearance: textfield;
+}
+.side-cart-item__qty-input:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+    border-radius: 6px;
+}
+
+/* Placeholder image styling */
+.side-cart-item__image--placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,#f3f4f6,#eceef0);
+}
+
+.side-cart-item__media img {
+    width: 100%;
+}
+
+/* Small screens: tighten layout */
+@media (max-width: 420px) {
+    .side-cart-item {
+        gap: 10px;
+        padding: 10px;
+    }
+    .side-cart-item__media {
+        width: 56px;
+        height: 56px;
+        flex-basis: 56px;
+    }
+    .side-cart-item__qty-input {
+        width: 42px;
+        min-width: 42px;
+    }
+}
+</style>
+
+{% liquid 
+    if liquid
+        assign key = item.key
+        assign url = item.url
+        assign image_url = item.image | img_url: 'medium'
+        assign title = item.product.title
+        assign variant_title = ''
+        if item.variant.title != 'Default Title'
+            assign variant_title = item.variant.title
+        endif
+        assign final_line_price = item.final_line_price | money
+        assign original_line_price = item.original_line_price | money
+        assign quantity = item.quantity
+    else
+        assign url = '$$ITEM_URL$$'
+        assign image_url = '$$IMAGE_URL$$'
+        assign title = '$$ITEM_TITLE$$'
+        assign variant_title = ''
+        if item.variant.title != 'Default Title'
+            assign variant_title = '$$ITEM_VARIANT_TITLE$$'
+        endif
+        assign final_line_price = '$$ITEM_FINAL_PRICE$$'
+        assign original_line_price = '$$ITEM__ORIGINAL_PRICE$$'
+        assign quantity = '$$ITEM_QUANTITY$$'
+    endif
+
+%}
+
+<side-cart-item class="side-cart-item" variant-id="{{ item.variant.id }}" item-count="{{ item.quantity }}">
+    <button class="side-cart-item__remove cart-item-delete" aria-label="Remove item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 11v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 11v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 6V4h6v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <a href="{{ url }}" class="side-cart-item__media" aria-hidden="true">
+        {% if image_url != blank %}
+            <img src="{{ image_url }}" alt="{{ title }}">
+        {% else %}
+            <div class="side-cart-item__image side-cart-item__image--placeholder"></div>
+        {% endif %}
+    </a>
+
+    <div class="side-cart-item__content">
+        <a href="{{ url }}" class="side-cart-item__title">{{ title }}</a>
+
+        <div class="side-cart-item__variant">{{ variant_title}}</div>
+
+        {% comment %} <ul class="side-cart-item__options">
+            <li class="side-cart-item__option">
+                <span class="side-cart-item__option-name">Option:</span>
+                <span class="side-cart-item__option-value">Value</span>
+            </li>
+        </ul> {% endcomment %}
+
+        <div class="side-cart-item__meta">
+            <div class="side-cart-item__price">
+                {% if item.original_line_price > item.final_line_price %}
+                    <span class="side-cart-item__price-compare">{{ original_line_price }}</span>
+                {% endif %}
+                {{ final_line_price }}
+            </div>
+
+            <div class="side-cart-item__quantity" role="group" aria-label="Quantity selector">
+                <button class="side-cart-item__qty-btn side-cart-item__qty-btn--decrease cart-item-qty-minus" aria-label="Decrease quantity">-</button>
+                <input class="side-cart-item__qty-input" type="number" min="0" step="1" value="{{ quantity }}" aria-label="Quantity" />
+                <button class="side-cart-item__qty-btn side-cart-item__qty-btn--increase cart-item-qty-plus" aria-label="Increase quantity">+</button>
+            </div>
+        </div>
+    </div>
+</side-cart-item>

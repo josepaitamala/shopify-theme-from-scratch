@@ -1,0 +1,68 @@
+{% comment %}
+Responsive image block
+- Select an image and optional alt text in the block settings.
+- Produces a <picture> with srcset and lazy-loaded <img>.
+{% endcomment %}
+
+{% if block.settings.image %}
+    {% assign img = block.settings.image %}
+    <figure class="block-image" aria-hidden="{{ block.settings.alt }}">
+        <picture>
+            <!-- WebP source (falls back to <img> if not supported) -->
+            <source
+                type="image/webp"
+                srcset="
+                    {{ img | img_url: '360x' }} 360w,
+                    {{ img | img_url: '720x' }} 720w,
+                    {{ img | img_url: '1200x' }} 1200w,
+                    {{ img | img_url: '1800x' }} 1800w
+                "
+                sizes="(max-width: 480px) 100vw, (max-width: 1200px) 50vw, 1200px"
+            />
+
+            <!-- Fallback raster image -->
+            <img
+                src="{{ img | img_url: '1200x' }}"
+                srcset="
+                    {{ img | img_url: '360x' }} 360w,
+                    {{ img | img_url: '720x' }} 720w,
+                    {{ img | img_url: '1200x' }} 1200w,
+                    {{ img | img_url: '1800x' }} 1800w
+                "
+                sizes="(max-width: 480px) 100vw, (max-width: 1200px) 50vw, 1200px"
+                alt="{{ block.settings.alt | escape }}"
+                loading="lazy"
+                decoding="async"
+                style="width:100%;height:auto;display:block;"
+            />
+        </picture>
+    </figure>
+{% else %}
+    <div class="block-image--placeholder" style="background:#f6f6f6;border:1px dashed #ddd;padding:1rem;text-align:center;color:#999">
+        Image placeholder
+    </div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Image",
+    "settings": [
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+        },
+        {
+            "type": "text",
+            "id": "alt",
+            "label": "Alt text (optional)",
+        }
+    ],
+    "presets": [
+        {
+            "name": "Image",
+            "category": "Custom"
+        }
+    ]
+}
+{% endschema %}

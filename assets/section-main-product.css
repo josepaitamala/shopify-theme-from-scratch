@@ -1,0 +1,35 @@
+.product-variants {
+    margin-block-end: 20px;
+}
+
+.product-variants fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: flex;
+    gap: 15px;
+}
+
+.product-variants fieldset label {
+    display: flex;
+}
+
+.product-variants__radio {
+    display: none;
+}
+.product-variants .product-variants__title {
+    border: 1px solid #000000;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.product-variants input:checked + .product-variants__title {
+    background-color: #820000;
+    border: 1px solid #820000;
+    color: #FFFFFF;
+}
+
+.product-variants input:disabled + .product-variants__title {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

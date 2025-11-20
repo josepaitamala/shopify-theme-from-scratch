@@ -1,0 +1,41 @@
+.sidebar-actions {
+    display: none;
+    gap:12px;
+    margin-top:16px;
+}
+
+.sidebar-actions.active {
+    display: flex;
+}
+
+.cart-view-button {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+    background: #f3f4f6;
+    color: #111;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.cart-checkout-button {
+    flex: 1;
+    padding:12px 16px;
+    text-align: center;
+    background: #111;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.cart-checkout-button.disabled {
+    flex:1;
+    padding:12px 16px;
+    text-align:center;
+    background:#111;
+    color:#fff;
+    border-radius:6px;
+    border:none;
+    cursor:not-allowed;
+}

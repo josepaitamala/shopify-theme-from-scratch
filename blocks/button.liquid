@@ -1,0 +1,68 @@
+{% comment %}
+Button block
+File: blocks/button.liquid
+Provides customizable button text, link, background color and text color.
+{% endcomment %}
+
+{% assign btn_text = block.settings.text | default: 'Shop now' %}
+{% assign btn_link = block.settings.link | default: '#' %}
+{% assign btn_bg = block.settings.background_color | default: '#111827' %}
+{% assign btn_color = block.settings.text_color | default: '#ffffff' %}
+
+<a
+    href="{{ btn_link }}"
+    class="button-block button"
+    style="
+        display: inline-block;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        background-color: {{ btn_bg }};
+        color: {{ btn_color }};
+        text-decoration: none;
+    "
+>
+    {{ btn_text }}
+</a>
+
+{% schema %}
+{
+    "name": "Button block",
+    "settings": [
+        {
+            "type": "text",
+            "id": "text",
+            "label": "Button text",
+            "default": "Shop now"
+        },
+        {
+            "type": "url",
+            "id": "link",
+            "label": "Button link"
+        },
+        {
+            "type": "color",
+            "id": "background_color",
+            "label": "Background color",
+            "default": "#111827"
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Text color",
+            "default": "#ffffff"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Button",
+            "category": "Custom",
+            "settings": {
+                "text": "Shop now",
+                "link": "#",
+                "background_color": "#111827",
+                "text_color": "#ffffff"
+            }
+        }
+    ]
+}
+{% endschema %}

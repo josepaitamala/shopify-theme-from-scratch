@@ -22,10 +22,14 @@
     "header": {
       "type": "header",
       "settings": {}
+    },
+    "side_cart": {
+      "type": "sidebar"
     }
   },
   "order": [
     "announcement_bar_fVBDea",
-    "header"
+    "header",
+    "side_cart"
   ]
 }

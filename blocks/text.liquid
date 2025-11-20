@@ -1,0 +1,89 @@
+{% comment %}
+blocks/text.liquid
+A reusable "Text" block. Place this file in /blocks and render it from your section:
+    {% for block in section.blocks %}
+        {% if block.type == 'text' %}
+            {% render 'blocks/text' %}
+        {% endif %}
+    {% endfor %}
+
+Settings:
+- Editable text (plain or rich HTML)
+- Choose element (p, h1..h6, div, span)
+- Optional CSS classes and ID
+{% endcomment %}
+
+{%- assign tag = block.settings.element | default: 'p' -%}
+{%- assign classes = block.settings.classes | strip -%}
+{%- assign id_attr = block.settings.element_id | strip -%}
+
+{%- comment -%}
+If using rich text, allow HTML (Shopify sanitizes richtext). If not, escape to prevent HTML injection.
+{%- endcomment -%}
+{%- if block.settings.rich_text %}
+    <{{ tag }}{%- if id_attr != blank %} id="{{ id_attr }}"{% endif -%}{%- if classes != blank %} class="{{ classes }}"{% endif -%}>
+        {{ block.settings.text }}
+    </{{ tag }}>
+{%- else -%}
+    <{{ tag }}{%- if id_attr != blank %} id="{{ id_attr }}"{% endif -%}{%- if classes != blank %} class="{{ classes }}"{% endif -%}>
+        {{ block.settings.text | escape }}
+    </{{ tag }}>
+{%- endif -%}
+
+{%- comment -%}
+Schema: defines a block type you can add in a section's blocks list.
+If your theme requires block definitions inside the section schema, copy the "blocks" entry below into that section's schema.
+(Keeping it here is convenient for some workflows — move into the section schema if needed.)
+{%- endcomment -%}
+{% schema %}
+{
+    "name": "Text block",
+    "settings": [
+        {
+            "id": "text",
+            "type": "textarea",
+            "label": "Text",
+            "default": "Add your text here"
+        },
+        {
+            "id": "rich_text",
+            "type": "checkbox",
+            "label": "Allow HTML / rich text",
+            "default": false
+        },
+        {
+            "id": "element",
+            "type": "select",
+            "label": "HTML element",
+            "options": [
+                { "value": "p", "label": "Paragraph (p)" },
+                { "value": "h1", "label": "Heading 1 (h1)" },
+                { "value": "h2", "label": "Heading 2 (h2)" },
+                { "value": "h3", "label": "Heading 3 (h3)" },
+                { "value": "h4", "label": "Heading 4 (h4)" },
+                { "value": "h5", "label": "Heading 5 (h5)" },
+                { "value": "h6", "label": "Heading 6 (h6)" },
+                { "value": "div", "label": "Div" },
+                { "value": "span", "label": "Span" }
+            ],
+            "default": "p"
+        },
+        {
+            "id": "classes",
+            "type": "text",
+            "label": "CSS classes"
+        },
+        {
+            "id": "element_id",
+            "type": "text",
+            "label": "Element ID (optional)"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Text",
+            "category": "Custom"
+        }
+    ]
+}
+{% endschema %}

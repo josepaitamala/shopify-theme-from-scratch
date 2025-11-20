@@ -1,0 +1,272 @@
+<!-- sections/sidebar.liquid -->
+
+{{ 'section-sidebar.css' | asset_url | stylesheet_tag }}
+
+
+<sidebar-drawer id="sidebarDrawer">
+    <side-cart>
+        <template id="side-cart-item">
+            {% render 'side-cart-item', liquid: false %}
+        </template>
+        <!-- Put your sidebar content here -->
+        <div style="padding: 24px;">
+            <h2>{{ 'cart.title' | t}}</h2>
+
+            <div class="cart-items" id="cart-items">
+                {% for item in cart.items %}
+                    {% render 'side-cart-item', item: item, liquid: true %}
+                {% endfor %}
+            </div>
+
+            <div id="cart-total">
+                {% if cart.item_count > 0 %}
+                    <div></div>
+                    <div>Total:</div>
+                    <div>{{ cart.total_price | money }}</div>
+                {% else %}
+                    <p>No items in your cart</p>
+                {% endif %}
+                    
+            </div>
+
+            <div id="sidebar-actions" class="sidebar-actions {% if cart.item_count > 0 %}active{% endif %}">
+                <a href="/cart"
+                    class="cart-view-button"
+                >
+                    View cart
+                </a>
+                
+                <a href="/checkout" 
+                    class="cart-checkout-button" 
+                >
+                    Checkout
+                </a>
+            </div>
+        </div>
+    </side-cart>
+</sidebar-drawer>
+
+{% comment %} <button
+    id="open-sidebar"
+    aria-controls="sidebarDrawer">
+    Open Sidebar
+</button> {% endcomment %}
+
+<script>
+class SidebarDrawer extends HTMLElement {
+    constructor() {
+        super();
+        this._initialized = false;
+
+        this._boundBackdropClick = this._onBackdropClick.bind(this);
+        this._boundCloseClick = this.close.bind(this);
+        this._boundKeydown = this._onKeydown.bind(this);
+
+        this._previouslyFocused = null;
+    }
+
+    connectedCallback() {
+        if (this._initialized) return;
+        this._initialized = true;
+
+        // Capture existing children (the slot content) before we add structure
+        const originalNodes = Array.from(this.childNodes);
+
+        // Create styles scoped to this tag
+        const style = document.createElement('style');
+        style.textContent = `
+            sidebar-drawer .backdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.48);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 300ms ease;
+                z-index: 9998;
+            }
+            sidebar-drawer .drawer {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                width: 550px;
+                max-width: 100%;
+                background: #fff;
+                box-shadow: -12px 0 30px rgba(0,0,0,0.2);
+                transform: translateX(100%);
+                transition: transform 300ms ease;
+                display: flex;
+                flex-direction: column;
+                z-index: 9999;
+            }
+            sidebar-drawer .header {
+                display:flex;
+                justify-content:flex-end;
+                padding: 12px;
+                border-bottom: 1px solid rgba(0,0,0,0.06);
+            }
+            sidebar-drawer .close-btn {
+                appearance: none;
+                background: transparent;
+                border: none;
+                font-size: 24px;
+                line-height: 1;
+                cursor: pointer;
+                padding: 4px;
+            }
+            sidebar-drawer[open] .backdrop {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            sidebar-drawer[open] .drawer {
+                transform: translateX(0);
+            }
+            sidebar-drawer .close-btn:focus { outline: 2px solid #2563eb; border-radius: 4px; }
+        `;
+
+        // Backdrop
+        const backdrop = document.createElement('div');
+        backdrop.className = 'backdrop';
+        backdrop.setAttribute('tabindex', '-1');
+        backdrop.setAttribute('part', 'backdrop');
+
+        // Drawer structure
+        const drawer = document.createElement('aside');
+        drawer.className = 'drawer';
+        drawer.setAttribute('role', 'dialog');
+        drawer.setAttribute('aria-modal', 'true');
+        drawer.setAttribute('aria-hidden', 'true');
+
+        const header = document.createElement('div');
+        header.className = 'header';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.setAttribute('aria-label', 'Close sidebar');
+        closeBtn.innerHTML = '&times;';
+
+        header.appendChild(closeBtn);
+
+        const content = document.createElement('div');
+        content.className = 'content';
+        content.setAttribute('part', 'content');
+
+        // Move original nodes into content
+        originalNodes.forEach(node => content.appendChild(node));
+
+        drawer.appendChild(header);
+        drawer.appendChild(content);
+
+        // Append to the custom element (light DOM)
+        this.appendChild(style);
+        this.appendChild(backdrop);
+        this.appendChild(drawer);
+
+        // Keep references
+        this._backdrop = backdrop;
+        this._drawer = drawer;
+        this._closeBtn = closeBtn;
+
+        // Event listeners
+        this._backdrop.addEventListener('click', this._boundBackdropClick);
+        this._closeBtn.addEventListener('click', this._boundCloseClick);
+
+        // Reflect initial open state
+        if (this.hasAttribute('open')) this._applyOpen(true);
+    }
+
+    disconnectedCallback() {
+        this._backdrop?.removeEventListener('click', this._boundBackdropClick);
+        this._closeBtn?.removeEventListener('click', this._boundCloseClick);
+        this._removeKeyListener();
+    }
+
+    static get observedAttributes() { return ['open']; }
+
+    attributeChangedCallback(name) {
+        if (name === 'open') {
+            const isOpen = this.hasAttribute('open');
+            this._applyOpen(isOpen);
+        }
+    }
+
+    // Public API
+    open() {
+        if (this.hasAttribute('open')) return;
+        this.setAttribute('open', '');
+    }
+    close() {
+        if (!this.hasAttribute('open')) return;
+        this.removeAttribute('open');
+    }
+    toggle() {
+        if (this.hasAttribute('open')) this.close();
+        else this.open();
+    }
+
+    // Internal
+    _applyOpen(isOpen) {
+        if (!this._drawer) return;
+        this._drawer.setAttribute('aria-hidden', String(!isOpen));
+        if (isOpen) {
+            this._previouslyFocused = document.activeElement;
+            this._addKeyListener();
+            this._closeBtn.focus();
+            this.dispatchEvent(new CustomEvent('sidebar-open', { bubbles: true }));
+        } else {
+            this._removeKeyListener();
+            if (this._previouslyFocused && typeof this._previouslyFocused.focus === 'function') {
+                this._previouslyFocused.focus();
+            }
+            this.dispatchEvent(new CustomEvent('sidebar-close', { bubbles: true }));
+        }
+    }
+
+    _onBackdropClick(e) {
+        if (e.target === this._backdrop) this.close();
+    }
+
+    _onKeydown(e) {
+        if (e.key === 'Escape') {
+            e.stopPropagation();
+            this.close();
+        }
+        if (e.key === 'Tab') {
+            const focusable = this._drawer.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (!first) {
+                e.preventDefault();
+                return;
+            }
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }
+
+    _addKeyListener() {
+        document.addEventListener('keydown', this._boundKeydown, { capture: true });
+    }
+    _removeKeyListener() {
+        document.removeEventListener('keydown', this._boundKeydown, { capture: true });
+    }
+}
+
+customElements.define('sidebar-drawer', SidebarDrawer);
+
+// Example open button hook (kept for convenience)
+document.getElementById('header-cart-icon')?.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    document.getElementById('sidebarDrawer')?.open();
+});
+</script>
+{% schema %}
+{
+    "name": "Sidebar"
+}
+{% endschema %}
