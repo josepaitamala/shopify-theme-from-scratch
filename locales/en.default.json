@@ -6,5 +6,9 @@
         "update": "Update",
         "continue_shopping": "Continue shopping",
         "browse_products": "Browse products"
+    },
+    "hero": {
+        "add_slides": "Add slides in the theme editor",
+        "add_slides_subtitle": "This hero supports images and videos per slide"
     }
 }
